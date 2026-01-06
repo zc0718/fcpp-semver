@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/zc0718/fcpp-semver/compare/v1.1.0...v1.1.1) (2026-01-06)
+
+
+### Bug Fixes
+
+* no assets upload ([a04058c](https://github.com/zc0718/fcpp-semver/commit/a04058ccc28e91bbe73e0361c1c054f6caf807c5))
+
 # [1.1.0](https://github.com/zc0718/fcpp-semver/compare/v1.0.3...v1.1.0) (2026-01-06)
 
 
