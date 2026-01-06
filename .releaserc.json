@@ -7,7 +7,7 @@
     [
       "@semantic-release/exec",
       {
-        "prepareCmd": "node -e \"const fs = require('fs'); const meta = JSON.parse(fs.readFileSync('metadata.json', 'utf8')); meta.version = '${nextRelease.version}'; fs.writeFileSync('metadata.json', JSON.stringify(meta, null, 2) + '\\n');\""
+        "prepareCmd": "node -e \"const fs = require('fs'); const content = fs.readFileSync('metadata.json', 'utf8'); const updated = content.replace(/\\\"version\\\"\\s*:\\s*\\\"[^\\\"]+\\\"/, '\\\"version\\\": \\\"${nextRelease.version}\\\"'); fs.writeFileSync('metadata.json', updated);\""
       }
     ],
     [
@@ -17,10 +17,12 @@
         "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
       }
     ],
-    "@semantic-release/github",
-    {
-      "addReleases": "top",
-      "assets": []
-    }
+    [
+      "@semantic-release/github",
+      {
+        "addReleases": "top",
+        "assets": []
+      }
+    ]
   ]
 }
