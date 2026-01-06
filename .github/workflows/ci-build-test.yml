@@ -1,0 +1,71 @@
+name: Build CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  CONAN_HOME: ${{ github.workspace }}/conan_home
+
+jobs:
+  build-and-test:
+    if: >-
+      github.event_name == 'push' &&
+      contains(join(github.event.commits.*.message, '\n'), ':building_construction:') ||
+      github.event_name == 'pull_request'
+    name: Build and Test (${{ matrix.os }}, ${{ matrix.build_type }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        build_type: [Debug, Release]
+        exclude:
+          - os: windows-latest
+            build_type: Debug
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Conan
+        run: |
+          pip install conan
+
+      - name: Configure Conan
+        run: |
+          echo "CONAN_HOME=${{ env.CONAN_HOME }}" >> $GITHUB_ENV
+          conan profile detect --force
+
+      - name: System dependencies (Ubuntu)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt install -y libnsl-dev
+
+      - name: Cache Conan packages
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.CONAN_HOME }}
+          key: conan-${{ runner.os }}-${{ hashFiles('conanfile.py', 'conan.lock') }}
+          restore-keys: |
+            conan-${{ runner.os }}-
+
+      - name: Build and test with Conan
+        run: |
+          conan create . -pr:b=default -pr:h=default -s build_type=${{ matrix.build_type }} --build=missing
+        timeout-minutes: 30
+
+      - name: Clean up test_package builds
+        run: |
+          python ./test_package/conanfile.py
+
+      - name: Clean up Conan packages
+        if: always()
+        run: |
+          conan remove "fcpp/*" --confirm
