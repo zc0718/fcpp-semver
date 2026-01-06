@@ -1,3 +1,10 @@
+## [1.1.2](https://github.com/zc0718/fcpp-semver/compare/v1.1.1...v1.1.2) (2026-01-06)
+
+
+### Bug Fixes
+
+* wont change metadata.json ([18d2695](https://github.com/zc0718/fcpp-semver/commit/18d2695a072fc980124ea27bbf7013f200a2b18a))
+
 ## [1.1.1](https://github.com/zc0718/fcpp-semver/compare/v1.1.0...v1.1.1) (2026-01-06)
 
 
