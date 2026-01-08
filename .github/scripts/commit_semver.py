@@ -71,7 +71,7 @@ def analyze_commits():
 
         level = max(level, current_msg_level)
         # 只在有意义的分类下添加，或者你想保留 Others
-        entry = f"- {first_line} (#{current_hash})"
+        entry = f"- {first_line} ([#{current_hash}](https://github.com/zc0718/fcpp-semver/commit/{current_hash}))"
         entries[category].append(entry)
 
     return level, entries
