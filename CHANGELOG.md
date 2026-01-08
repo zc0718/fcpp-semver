@@ -1,3 +1,8 @@
+## [1.4.0] - 2026-01-08
+
+**Features**
+- feat: Change hash format in commit_semver.py (#fe04b47)
+
 ## [1.3.0] - 2026-01-08
 
 **Features**
