@@ -1,3 +1,20 @@
+## [1.2.0] - 2026-01-08
+
+**Features**
+- feat: add via online editor (244c3ae
+:feat: add via online editor)
+
+**Others**
+- 243faf2 (1ac6d1c
+fix: add encoding1)
+- 3d027f9 (5d8ede1
+fix: test2)
+- 02a295d (2f00e50
+fix: no chinese characters)
+- e1ec686 (e4c6910
+feat: no tag ver via py)
+- 74c9687 (d5d74da)
+
 ## [1.1.2](https://github.com/zc0718/fcpp-semver/compare/v1.1.1...v1.1.2) (2026-01-06)
 
 
