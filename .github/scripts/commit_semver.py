@@ -11,19 +11,27 @@ def run(cmd):
 
 
 def analyze_commits():
-    result = run("git log --oneline --grep='chore(release):' -n 1 --pretty=format:%H")
-    since = ''
-    if result.stdout.strip():
-        since = result.stdout.strip()
-        cmd = f"git log {since}..HEAD --pretty=format:'%s---DELIMITER---%h'"
+    # 1. 寻找上一个 release 的 hash
+    # 注意：确保 grep 的字符串和你 commit_msg 的前缀完全一致
+    result = run("git log --grep='chore(release):' -n 1 --format=%H")
+    since = result.stdout.strip()
+    
+    # 2. 构建 git log 命令
+    # %s 是主题，%b 是正文，%h 是简短 hash
+    # 我们用一个极罕见的字符组合作为 commit 间的分隔符
+    format_str = "%s%n%b---ENDMSG---%h"
+    if since:
+        cmd = f"git log {since}..HEAD --format='{format_str}'"
     else:
-        cmd = "git log --all --pretty=format:'%s---DELIMITER---%h'"
+        cmd = f"git log --format='{format_str}'"
 
     result = run(cmd)
-    if result.returncode != 0:
+    if not result.stdout.strip():
         return 0, {}
 
-    raw_commits = result.stdout.strip().split("---DELIMITER---")
+    # 3. 解析
+    # 先按 commit 分隔
+    raw_blocks = result.stdout.strip().split("---ENDMSG---")
     
     level = 0
     entries = {
@@ -34,22 +42,24 @@ def analyze_commits():
         "Others": []
     }
 
-    for i in range(0, len(raw_commits), 2):
-        if i+1 >= len(raw_commits): break
-        msg = raw_commits[i].strip()
-        hash_ = raw_commits[i+1].strip()
-
-        if not msg or "[skip ci]" in msg:
-            if level > 0: break
+    # raw_blocks 的结构现在是: [msg1, hash1\nmsg2, hash2...] 
+    # 需要精细化处理偏移
+    for i in range(len(raw_blocks) - 1):
+        # 当前块包含 msg
+        full_msg = raw_blocks[i].strip()
+        # 下一个块的开头包含当前 commit 的 hash
+        current_hash = raw_blocks[i+1].splitlines()[0].strip()
+        
+        if not full_msg or "[skip ci]" in full_msg:
             continue
 
-        lines = msg.splitlines()
-        first_line = lines[0]
-
+        first_line = full_msg.splitlines()[0]
+        
         current_msg_level = 0
         category = "Others"
 
-        if "BREAKING CHANGE" in msg or re.match(r"^[a-z]+(\([^)]*\))?!:", first_line):
+        # 判定
+        if "BREAKING CHANGE" in full_msg or re.match(r"^[a-z]+(\([^)]*\))?!:", first_line):
             current_msg_level = 3
             category = "Breaking Changes"
         elif re.match(r"^feat(\([^)]*\))?:", first_line):
@@ -60,7 +70,8 @@ def analyze_commits():
             category = "Bug Fixes" if "fix" in first_line else "Performance Improvements"
 
         level = max(level, current_msg_level)
-        entry = f"- {first_line} ({hash_})"
+        # 只在有意义的分类下添加，或者你想保留 Others
+        entry = f"- {first_line} ({current_hash})"
         entries[category].append(entry)
 
     return level, entries
