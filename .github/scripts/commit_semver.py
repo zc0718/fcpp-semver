@@ -54,6 +54,7 @@ def analyze_commits():
             continue
 
         first_line = full_msg.splitlines()[0]
+        clean_line = re.sub(r'^[a-z]+(\([^)]*\))?!?:\s*', '', first_line, flags=re.I)
         
         current_msg_level = 0
         category = "Others"
@@ -71,7 +72,7 @@ def analyze_commits():
 
         level = max(level, current_msg_level)
         # 只在有意义的分类下添加，或者你想保留 Others
-        entry = f"- {first_line} ([#{current_hash}](https://github.com/zc0718/fcpp-semver/commit/{current_hash}))"
+        entry = f"- {clean_line} ([#{current_hash}](https://github.com/zc0718/fcpp-semver/commit/{current_hash}))"
         entries[category].append(entry)
 
     return level, entries
