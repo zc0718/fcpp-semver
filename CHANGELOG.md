@@ -1,3 +1,8 @@
+## [1.4.2] - 2026-01-08
+
+**Bug Fixes**
+- Clean commit message format in commit_semver.py ([#41e1fe0](https://github.com/zc0718/fcpp-semver/commit/41e1fe0))
+
 ## [1.4.1] - 2026-01-08
 
 **Bug Fixes**
