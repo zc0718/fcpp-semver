@@ -1,3 +1,8 @@
+## [1.3.0] - 2026-01-08
+
+**Features**
+- feat: Refactor commit analysis logic in commit_semver.py (cd4d4ae)
+
 ## [1.2.0] - 2026-01-08
 
 **Features**
