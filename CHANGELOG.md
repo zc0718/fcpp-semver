@@ -1,3 +1,8 @@
+## [1.4.1] - 2026-01-08
+
+**Bug Fixes**
+- fix: Update commit message format with hyperlink ([#707c1e1](https://github.com/zc0718/fcpp-semver/commit/707c1e1))
+
 ## [1.4.0] - 2026-01-08
 
 **Features**
